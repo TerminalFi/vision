@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 
-class Renderable(ABC):
+class renderable(ABC):
     @abstractmethod
     def render(self) -> str:
         pass

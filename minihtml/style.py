@@ -1,9 +1,9 @@
 from typing import Union
 
-from .element import Renderable
+from minihtml.element import renderable
 
 
-class style(Renderable):
+class style(renderable):
     def __init__(self, default_css: Union[dict, None]):
         self.css = default_css or {}
         self.tag = self.__class__.__name__

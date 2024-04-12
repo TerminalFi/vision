@@ -7,7 +7,7 @@ from .style import style
 SELF_CLOSING_TAGS = ["img", "br", "hr", "input", "link", "meta"]
 
 
-class element(Renderable):
+class element(renderable):
     """
     The element class is a representation of an HTML element. It can be used to generate HTML strings by chaining methods.
     """

@@ -55,7 +55,7 @@ __all__ = [
     "MiniHTML",
     "ol",
     "p",
-    "Renderable",
+    "renderable",
     "small",
     "span",
     "strong",
