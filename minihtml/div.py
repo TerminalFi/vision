@@ -1,7 +1,20 @@
-from .element import element
+from typing import Union
+
+from .tag import Tag
 
 
-class div(element):
-    def __init__(self, *args, **kwargs):
-        self.tag = self.__class__.__name__
-        super().__init__(self.tag, *args, **kwargs)
+class div(Tag):
+    """
+    Represents the 'div' HTML tag, widely used as a container for other HTML elements. The 'div' tag is used to group
+    blocks of content and layout elements together in sections. It is often styled with CSS to manage layout and
+    formatting both for visual presentation and web design structure.
+
+    Example usage:
+        with div():
+            p(content="This paragraph is inside a 'div' element.")
+    """
+
+    def __init__(self, content: Union[str, None] = None, *args, **kwargs):
+        super().__init__(self.__class__.__name__, *args, **kwargs)
+        if content:
+            self.content(content)

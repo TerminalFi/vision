@@ -3,10 +3,10 @@ from typing import Union
 import mdpopups
 import sublime
 
-from .element import element
+from .tag import Tag
 
 
-class MiniHTML(element):
+class MiniHTML(Tag):
     """
     MiniHTML is a class that allows
     for the creation of minihtml content
@@ -23,14 +23,14 @@ class MiniHTML(element):
         """
         Resets the MiniHTML object to its initial state. Clearing all the content, including head, body, css, and sheet.
         """
-        self.children = []
+        self._children = []
         return self
 
     def render_to_sheet(self, sheet_name: str):
         if sheet_name == "":
             raise ValueError("Sheet name cannot be empty")
         # Render the full HTML document to a new sheet
-        self.sheet_name = f"minihtml.{sheet_name}"
+        self.sheet_name = sheet_name
         if self.sheet is None or self.sheet.window() is None:
             self.sheet = mdpopups.new_html_sheet(
                 window=sublime.active_window(),

@@ -1,7 +1,20 @@
-from .element import element
+from typing import Union
+
+from .tag import Tag
 
 
-class body(element):
-    def __init__(self, *args, **kwargs):
-        self.tag = self.__class__.__name__
-        super().__init__(self.tag, *args, **kwargs)
+class body(Tag):
+    """
+    Represents the 'body' HTML tag, which encloses the main content of an HTML document. This tag is used as a container
+    for all the contents of an HTML document except for the head tag, typically including text, hyperlinks, images, tables,
+    and lists.
+
+    Example usage:
+        main_content = body()
+        main_content.child(p(content="This is a paragraph in the body of the document."))
+    """
+
+    def __init__(self, content: Union[str, None] = None, *args, **kwargs):
+        super().__init__(self.__class__.__name__, *args, **kwargs)
+        if content:
+            self.content(content)

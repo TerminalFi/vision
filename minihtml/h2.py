@@ -1,7 +1,10 @@
-from .element import element
+from typing import Union
+
+from .tag import Tag
 
 
-class h2(element):
-    def __init__(self, *args, **kwargs):
-        self.tag = self.__class__.__name__
-        super().__init__(self.tag, *args, **kwargs)
+class h2(Tag):
+    def __init__(self, content: Union[str, None] = None, *args, **kwargs):
+        super().__init__(self.__class__.__name__, *args, **kwargs)
+        if content:
+            self.content(content)

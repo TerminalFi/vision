@@ -1,7 +1,6 @@
-from .element import element
+from .tag import Tag
 
 
-class ul(element):
+class ul(Tag):
     def __init__(self, *args, **kwargs):
-        self.tag = self.__class__.__name__
-        super().__init__(self.tag, *args, **kwargs)
+        super().__init__(self.__class__.__name__, *args, **kwargs)

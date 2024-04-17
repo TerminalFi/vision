@@ -1,7 +1,19 @@
-from .element import element
+from typing import Union
+
+from .tag import Tag
 
 
-class big(element):
-    def __init__(self, *args, **kwargs):
-        self.tag = self.__class__.__name__
-        super().__init__(self.tag, *args, **kwargs)
+class big(Tag):
+    """
+    Represents a 'big' HTML tag, used historically to increase the font size of the enclosed text by one size larger
+    than the default text size. It is often used to emphasize text visually without implying additional importance
+    which might otherwise be conveyed by stronger emphasis tags like <strong>.
+
+    Example usage:
+        big(content="This text will appear slightly larger than surrounding text.")
+    """
+
+    def __init__(self, content: Union[str, None] = None, *args, **kwargs):
+        super().__init__(self.__class__.__name__, *args, **kwargs)
+        if content:
+            self.content(content)

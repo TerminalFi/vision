@@ -5,7 +5,6 @@ from .body import body
 from .br import br
 from .code import code
 from .div import div
-from .element import element
 from .em import em
 from .h1 import h1
 from .h2 import h2
@@ -21,11 +20,13 @@ from .li import li
 from .minihtml import MiniHTML
 from .ol import ol
 from .p import p
-from .renderable import Renderable
+from .renderable import BaseTag
 from .small import small
 from .span import span
 from .strong import strong
-from .style import style
+from .style import Style
+from .tag import Tag
+from .text import Text as text
 from .tt import tt
 from .u import u
 from .ul import ul
@@ -39,7 +40,6 @@ __all__ = [
     "br",
     "code",
     "div",
-    "element",
     "em",
     "h1",
     "h2",
@@ -55,11 +55,13 @@ __all__ = [
     "MiniHTML",
     "ol",
     "p",
-    "renderable",
+    "BaseTag",
     "small",
     "span",
     "strong",
-    "style",
+    "Style",
+    "Tag",
+    "text",
     "tt",
     "u",
     "ul",
