@@ -21,27 +21,32 @@ TODO
 Here's a simple example demonstrating how to use MiniHTML to create an HTML document:
 
 ```python
-from minihtml import div, p, h1
+from minihtml import body, div, p, h1, Tag
 
-# Create some HTML elements
-html_content = div().add_child(
-    h1("Welcome to MiniHTML"),
-    p("This is a simple HTML document generated using MiniHTML.")
-)
+root = Tag("html")
+with root:
+  with body():
+    with div():
+      h1("Welcome to MiniHTML")
+      p("This is a simple HTML document generated using MiniHTML.")
 
-# Generate HTML code from the elements
-html_code = html_content.render()
-
-print(html_code)
+print(root.render())
 ```
 
 This will output:
 
 ```html
-<div>
-  <h1>Welcome to MiniHTML</h1>
-  <p>This is a simple HTML document generated using MiniHTML.</p>
-</div>
+<html>
+
+<body>
+    <div>
+        <h1>Welcome to MiniHTML</h1>
+        <p>This is a simple HTML document generated using MiniHTML.</p>
+    </div>
+</body>
+
+</html>
+
 ```
 
 ## Contributing
