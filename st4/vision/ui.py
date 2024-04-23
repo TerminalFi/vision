@@ -4,7 +4,7 @@ from typing import List
 
 import sublime
 
-from .tag import Tag
+from st4.minihtml.tag import Tag
 
 
 class ImageType(Enum):
@@ -50,7 +50,6 @@ class Unit(Enum):
     EM = "em"
     PX = "px"
     PT = "pt"
-    PERCENT = "%"
 
 
 class Spacer(Tag):

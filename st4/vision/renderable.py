@@ -2,6 +2,8 @@ import html
 import threading
 from typing import Any, Dict, List, Literal, Optional, Union
 
+from .supported import css_validator
+
 _lock = threading.RLock()  # Global lock accessible by both the metaclass and the class
 
 
@@ -86,7 +88,9 @@ class BaseTag(metaclass=base):
         with _lock:
             self._styles.update(style_dict)
 
-    def set_style(self, key: str, value: str) -> "BaseTag":
+    def set_style(self, key: str, value: str) -> "BaseTag | ValueError":
+        if not css_validator.validate(key, value):
+            raise ValueError(f"Invalid value '{value}' for CSS property '{key}'")
         with _lock:
             self._styles[key] = value
         return self
@@ -95,7 +99,7 @@ class BaseTag(metaclass=base):
     @property
     def classes(self) -> List[str]:
         with _lock:  #
-            return List(self._classes)
+            return list(self._classes)
 
     @classes.setter
     def classes(self, value: str):
@@ -136,166 +140,169 @@ class BaseTag(metaclass=base):
 
     # Dimension Attributes
     def width(self, value: str) -> "BaseTag":
-        self._styles["width"] = value
+        self.set_style("width", value)
         return self
 
     def height(self, value: str) -> "BaseTag":
-        self._styles["height"] = value
+        self.set_style("height", value)
         return self
 
     # Color and Spacing
-    def bg_color(self, color: str) -> "BaseTag":
+    def bg_color(self, color: str) -> "BaseTag | ValueError":
         return self.set_style("background-color", color)
 
-    def white_space(self, whitespace_type: str) -> "BaseTag":
+    def white_space(self, whitespace_type: str) -> "BaseTag | ValueError":
         return self.set_style("white-space", whitespace_type)
 
-    def white_space_normal(self) -> "BaseTag":
+    def white_space_normal(self) -> "BaseTag | ValueError":
         return self.set_style("white-space", "normal")
 
-    def white_space_no_wrap(self) -> "BaseTag":
+    def white_space_no_wrap(self) -> "BaseTag | ValueError":
         return self.set_style("white-space", "nowrap")
 
-    def white_space_pre(self) -> "BaseTag":
+    def white_space_pre(self) -> "BaseTag | ValueError":
         return self.set_style("white-space", "pre")
 
-    def white_space_pre_wrap(self) -> "BaseTag":
+    def white_space_pre_wrap(self) -> "BaseTag | ValueError":
         return self.set_style("white-space", "pre-wrap")
 
     # Display Properties
-    def display(self, display_type) -> "BaseTag":
+    def display(self, display_type) -> "BaseTag | ValueError":
         return self.set_style("display", display_type)
 
-    def display_none(self) -> "BaseTag":
+    def display_none(self) -> "BaseTag | ValueError":
         return self.set_style("display", "none")
 
-    def display_inline(self) -> "BaseTag":
+    def display_inline(self) -> "BaseTag | ValueError":
         return self.set_style("display", "inline")
 
-    def display_block(self) -> "BaseTag":
+    def display_block(self) -> "BaseTag | ValueError":
         return self.set_style("display", "block")
 
-    def display_List_item(self) -> "BaseTag":
+    def display_List_item(self) -> "BaseTag | ValueError":
         return self.set_style("display", "List-item")
 
-    def display_inline_block(self) -> "BaseTag":
+    def display_inline_block(self) -> "BaseTag | ValueError":
         return self.set_style("display", "inline-block")
 
     # Positioning
 
-    def position(self, position_type: str) -> "BaseTag":
+    def position(self, position_type: str) -> "BaseTag | ValueError":
         return self.set_style("position", position_type)
 
-    def position_static(self) -> "BaseTag":
+    def position_static(self) -> "BaseTag | ValueError":
         return self.set_style("position", "static")
 
-    def position_relative(self) -> "BaseTag":
+    def position_relative(self) -> "BaseTag | ValueError":
         return self.set_style("position", "relative")
 
-    def top(self, value: str) -> "BaseTag":
+    def top(self, value: str) -> "BaseTag | ValueError":
         return self.set_style("top", value)
 
-    def right(self, value: str) -> "BaseTag":
+    def right(self, value: str) -> "BaseTag | ValueError":
         return self.set_style("right", value)
 
-    def bottom(self, value: str) -> "BaseTag":
+    def bottom(self, value: str) -> "BaseTag | ValueError":
         return self.set_style("bottom", value)
 
-    def left(self, value: str) -> "BaseTag":
+    def left(self, value: str) -> "BaseTag | ValueError":
         return self.set_style("left", value)
 
     # Margin and Padding
-    def m(self, value: str) -> "BaseTag":
+    def m(self, value: str) -> "BaseTag | ValueError":
         return self.set_style("margin", value)
 
-    def ml(self, value: str) -> "BaseTag":
+    def ml(self, value: str) -> "BaseTag | ValueError":
         return self.set_style("margin-left", value)
 
-    def mr(self, value: str) -> "BaseTag":
+    def mr(self, value: str) -> "BaseTag | ValueError":
         return self.set_style("margin-right", value)
 
-    def mt(self, value: str) -> "BaseTag":
+    def mt(self, value: str) -> "BaseTag | ValueError":
         return self.set_style("margin-top", value)
 
-    def mb(self, value: str) -> "BaseTag":
+    def mb(self, value: str) -> "BaseTag | ValueError":
         return self.set_style("margin-bottom", value)
 
-    def p(self, value: str) -> "BaseTag":
+    def p(self, value: str) -> "BaseTag | ValueError":
         return self.set_style("padding", value)
 
-    def pl(self, value: str) -> "BaseTag":
+    def pl(self, value: str) -> "BaseTag | ValueError":
         return self.set_style("padding-left", value)
 
-    def pr(self, value: str) -> "BaseTag":
+    def pr(self, value: str) -> "BaseTag | ValueError":
         return self.set_style("padding-right", value)
 
-    def pt(self, value: str) -> "BaseTag":
+    def pt(self, value: str) -> "BaseTag | ValueError":
         return self.set_style("padding-top", value)
 
-    def pb(self, value: str) -> "BaseTag":
+    def pb(self, value: str) -> "BaseTag | ValueError":
         return self.set_style("padding-bottom", value)
 
-    def px(self, value: str) -> "BaseTag":
-        return self.pl(value).pr(value)
+    def px(self, value: str) -> "BaseTag | ValueError":
+        pl = self.pl(value)
+        if isinstance(pl, ValueError):
+            return pl
+        return self.pr(value)
 
-    def py(self, value: str) -> "BaseTag":
-        return self.pt(value).pb(value)
+    def py(self, value: str) -> "BaseTag | ValueError":
+        pt = self.pt(value)
+        if isinstance(pt, ValueError):
+            return pt
+        return self.pb(value)
 
     # Borders and Radius
-    def border(self, width="1px", style="solid", color="black") -> "BaseTag":
+    def border(self, width="1px", style="solid", color="black") -> "BaseTag | ValueError":
         return self.set_style("border", f"{width} {style} {color}")
 
-    def border_left(self, width="1px", style="solid", color="black") -> "BaseTag":
+    def border_left(self, width="1px", style="solid", color="black") -> "BaseTag | ValueError":
         return self.set_style("border-left", f"{width} {style} {color}")
 
-    def border_right(self, width="1px", style="solid", color="black") -> "BaseTag":
+    def border_right(self, width="1px", style="solid", color="black") -> "BaseTag | ValueError":
         return self.set_style("border-right", f"{width} {style} {color}")
 
-    def border_top(self, width="1px", style="solid", color="black") -> "BaseTag":
+    def border_top(self, width="1px", style="solid", color="black") -> "BaseTag | ValueError":
         return self.set_style("border-top", f"{width} {style} {color}")
 
-    def border_bottom(self, width="1px", style="solid", color="black") -> "BaseTag":
+    def border_bottom(self, width="1px", style="solid", color="black") -> "BaseTag | ValueError":
         return self.set_style("border-bottom", f"{width} {style} {color}")
 
-    def border_radius(self, radius: str) -> "BaseTag":
+    def border_radius(self, radius: str) -> "BaseTag | ValueError":
         return self.set_style("border-radius", radius)
 
-    def border_top_left_radius(self, radius: str) -> "BaseTag":
+    def border_top_left_radius(self, radius: str) -> "BaseTag | ValueError":
         return self.set_style("border-top-left-radius", radius)
 
-    def border_top_right_radius(self, radius: str) -> "BaseTag":
+    def border_top_right_radius(self, radius: str) -> "BaseTag | ValueError":
         return self.set_style("border-top-right-radius", radius)
 
-    def border_bottom_right_radius(self, radius: str) -> "BaseTag":
+    def border_bottom_right_radius(self, radius: str) -> "BaseTag | ValueError":
         return self.set_style("border-bottom-right-radius", radius)
 
-    def border_bottom_left_radius(self, radius: str) -> "BaseTag":
+    def border_bottom_left_radius(self, radius: str) -> "BaseTag | ValueError":
         return self.set_style("border-bottom-left-radius", radius)
 
     # Text and Font Styling
-    def font_family(self, *family: str) -> "BaseTag":
+    def font_family(self, *family: str) -> "BaseTag | ValueError":
         return self.set_style("font-family", ", ".join(family))
 
-    def font_light(self) -> "BaseTag":
-        return self.set_style("font-weight", "300")
+    def font_normal(self) -> "BaseTag | ValueError":
+        return self.set_style("font-weight", "normal")
 
-    def font_medium(self) -> "BaseTag":
-        return self.set_style("font-weight", "500")
+    def font_bold(self) -> "BaseTag | ValueError":
+        return self.set_style("font-weight", "bold")
 
-    def font_bold(self) -> "BaseTag":
-        return self.set_style("font-weight", "700")
-
-    def text_align(self, align: str) -> "BaseTag":
+    def text_align(self, align: str) -> "BaseTag | ValueError":
         return self.set_style("text-align", align)
 
-    def text_decoration(self, value: str) -> "BaseTag":
+    def text_decoration(self, value: str) -> "BaseTag | ValueError":
         return self.set_style("text-decoration", value)
 
-    def text_decoration_none(self) -> "BaseTag":
+    def text_decoration_none(self) -> "BaseTag | ValueError":
         return self.set_style("text-decoration", "none")
 
-    def text_decoration_underline(self) -> "BaseTag":
+    def text_decoration_underline(self) -> "BaseTag | ValueError":
         return self.set_style("text-decoration", "underline")
 
-    def color(self, color: str) -> "BaseTag":
+    def color(self, color: str) -> "BaseTag | ValueError":
         return self.set_style("color", color)

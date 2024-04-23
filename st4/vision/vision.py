@@ -6,9 +6,9 @@ import sublime
 from .tag import Tag
 
 
-class MiniHTML(Tag):
+class Vision(Tag):
     """
-    MiniHTML is a class that allows
+    Vision is a class that allows
     for the creation of minihtml content
     that can be rendered to a new sheet
     in Sublime Text or return the generated HTML.
@@ -19,9 +19,9 @@ class MiniHTML(Tag):
         self.sheet_name: str = ""
         self.sheet: Optional[sublime.Sheet] = None
 
-    def reset(self) -> "MiniHTML":
+    def reset(self) -> "Vision":
         """
-        Resets the MiniHTML object to its initial state. Clearing all the content, including head, body, css, and sheet.
+        Resets the Vision object to its initial state. Clearing all the content, including head, body, css, and sheet.
         """
         self._children = []
         return self

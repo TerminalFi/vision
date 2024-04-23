@@ -17,7 +17,6 @@ from .hr import hr
 from .i import i
 from .img import img
 from .li import li
-from .minihtml import MiniHTML
 from .ol import ol
 from .p import p
 from .renderable import BaseTag
@@ -31,6 +30,7 @@ from .tt import tt
 from .u import u
 from .ul import ul
 from .var import var
+from .vision import Vision
 
 __all__ = [
     "a",
@@ -53,7 +53,7 @@ __all__ = [
     "i",
     "img",
     "li",
-    "MiniHTML",
+    "Vision",
     "ol",
     "p",
     "small",
