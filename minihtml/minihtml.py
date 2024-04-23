@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Optional
 
 import mdpopups
 import sublime
@@ -17,7 +17,7 @@ class MiniHTML(Tag):
     def __init__(self):
         super().__init__("html")
         self.sheet_name: str = ""
-        self.sheet: Union[sublime.Sheet, None] = None
+        self.sheet: Optional[sublime.Sheet] = None
 
     def reset(self) -> "MiniHTML":
         """

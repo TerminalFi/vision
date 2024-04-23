@@ -16,21 +16,41 @@ class ImageType(Enum):
         JPEG (int): Represents an image in Joint Photographic Experts Group format.
         Base64 (int): Indicates that the image is encoded in Base64 format, usually for embedding directly into web pages.
     """
+
     PNG = 1
     JPEG = 2
     Base64 = 3
 
 
-def _image_to_base64(type: ImageType, path: str) -> str:
+def _image_to_base64(path: str, image_type: ImageType = ImageType.PNG) -> str:
     data = sublime.load_binary_resource(path)
-    if type == ImageType.PNG:
+    if image_type == ImageType.PNG:
         return f'data:image/png;base64,{base64.b64encode(data).decode("ascii")}'
-    elif type == ImageType.JPEG:
+    elif image_type == ImageType.JPEG:
         return f'data:image/jpeg;base64,{base64.b64encode(data).decode("ascii")}'
-    elif type == ImageType.Base64:
+    elif image_type == ImageType.Base64:
         return path
     else:
         raise ValueError("Invalid image type")
+
+
+class Unit(Enum):
+    """
+    An enumeration to represent different units of measurement for spacing.
+
+    Attributes:
+        REM (int): Represents a unit of measurement relative to the font size of the root element.
+        EM (int): Represents a unit of measurement relative to the font size of the current element.
+        PX (int): Represents a unit of measurement in pixels.
+        PT (int): Represents a unit of measurement in points.
+        PERCENT (int): Represents a unit of measurement as a percentage of the parent element.
+    """
+
+    REM = "rem"
+    EM = "em"
+    PX = "px"
+    PT = "pt"
+    PERCENT = "%"
 
 
 class Spacer(Tag):
@@ -46,13 +66,14 @@ class Spacer(Tag):
         It effectively serves as a horizontal gap or space in web layouts, using CSS to set its width.
     """
 
-    def __init__(self, space: int = 1):
+    def __init__(self, space: int = 1, unit: Unit = Unit.REM):
         super().__init__("img")
         self.space = space  # Define the amount of space (width) the spacer should take up
+        self.unit = unit.value  # Define the unit of measurement for the spacer width
 
     def render(self):
         # Returns an HTML string for an image tag with the specified width and no image source
-        return f'<img style="width: {self.space or 0}rem;">'
+        return f'<img style="width: {self.space or 0}{self.unit};">'
 
 
 class Button(Tag):
@@ -95,6 +116,7 @@ class ButtonGroup:
     The buttons are displayed in a row, with the outer buttons having squared corners
     on the outer edges to delineate the group boundaries.
     """
+
     def __init__(self, classes: List[str] = [], *buttons: Button):
         self.buttons = buttons
         self.classes = classes
@@ -108,16 +130,16 @@ class ButtonGroup:
     def apply_classes(self):
         for btn in self.buttons:
             for clazz in self.classes:
-                btn.set_classes('append', clazz)
+                btn.set_classes("append", clazz)
 
     def apply_edge_styles(self, btn, index):
         total = len(self.buttons)
         if index == 0:  # First button
-            btn.border_top_right_radius('0pt').border_bottom_right_radius('0pt')
+            btn.border_top_right_radius("0pt").border_bottom_right_radius("0pt")
         elif index == total - 1:  # Last button
-            btn.border_top_left_radius('0pt').border_bottom_left_radius('0pt')
+            btn.border_top_left_radius("0pt").border_bottom_left_radius("0pt")
         else:
-            btn.border_radius('0pt')
+            btn.border_radius("0pt")
 
 
 class Link(Tag):
@@ -133,13 +155,13 @@ class Link(Tag):
         The link is styled with a background and foreground color defined by CSS variables.
         It serves both as navigational and aesthetic purposes in web interfaces.
     """
+
     def __init__(self, label: str, href: str = ""):
         super().__init__("a")
         self.bg_color("var(--background)")
         self.color("var(--foreground)")
         self.content(label)
         self.href(href)
-
 
 
 class Icon(Tag):
@@ -155,6 +177,7 @@ class Icon(Tag):
     Styling:
         The icon's background is set to transparent to blend seamlessly with the UI.
     """
+
     def __init__(self, src: str, image_type: ImageType = ImageType.PNG, alt: str = ""):
         super().__init__("img")
         try:
@@ -164,7 +187,6 @@ class Icon(Tag):
         self.set_attribute("src", image_src)
         self.set_attribute("alt", alt)
         self.bg_color("transparent")
-
 
 
 class Image(Tag):
@@ -181,6 +203,7 @@ class Image(Tag):
         The image attempts to convert the source file to base64 format for embedding directly in web pages,
         falling back to the original source if conversion fails.
     """
+
     def __init__(self, src: str, image_type: ImageType = ImageType.PNG, alt: str = ""):
         super().__init__("img")
         try:
@@ -189,4 +212,3 @@ class Image(Tag):
             image_src = src
         self.set_attribute("src", image_src)
         self.set_attribute("alt", alt)
-

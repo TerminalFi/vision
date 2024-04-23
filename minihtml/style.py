@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Dict, Optional
 
 from .renderable import BaseTag
 
@@ -19,7 +19,7 @@ class Style(BaseTag):
 
     """
 
-    def __init__(self, default_css: Union[dict, None]):
+    def __init__(self, default_css: Optional[Dict]):
         self.css = default_css or {}
         self.tag = self.__class__.__name__
 

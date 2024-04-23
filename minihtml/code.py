@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Optional
 
 import mdpopups
 import sublime
@@ -17,7 +17,7 @@ class code(Tag):
         # Renders as: <code>print('Hello, World!')</code> in HTML
     """
 
-    def __init__(self, content: Union[str, None] = None, *args, **kwargs):
+    def __init__(self, content: Optional[str] = None, *args, **kwargs):
         super().__init__(self.__class__.__name__, *args, **kwargs)
         if content:
             window = sublime.active_window()

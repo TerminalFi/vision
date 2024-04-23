@@ -1,3 +1,6 @@
+import html
+import html.parser
+import re
 from typing import Any, Callable, Iterable, List, Union
 
 from .renderable import BaseTag, _lock
@@ -5,6 +8,18 @@ from .style import Style
 from .text import Text
 
 SELF_CLOSING_TAGS = ["img", "br", "hr", "input", "link", "meta"]
+
+RE_BAD_ENTITIES = re.compile(r"(&(?!amp;|lt;|gt;|nbsp;)(?:\w+;|#\d+;))")
+
+
+def _remove_entities(text):
+    """Remove unsupported HTML entities."""
+
+    def repl(m):
+        """Replace entities except &, <, >, and `nbsp`."""
+        return html.unescape(m.group(1))
+
+    return RE_BAD_ENTITIES.sub(repl, text)
 
 
 class Tag(BaseTag):
@@ -49,7 +64,7 @@ class Tag(BaseTag):
     # Content Management
     def content(self, content: str) -> "Tag":
         with _lock:
-            self._content += content
+            self._content = _remove_entities(html.escape(content))
         return self
 
     def render(self) -> str:
@@ -83,7 +98,7 @@ class Tag(BaseTag):
         for child in self._children:
             if child is None:
                 continue
-            children_html = f'{children_html}{child.render()}'
+            children_html = f"{children_html}{child.render()}"
 
         # Closing tag
         close_tag = f"</{self.tag}>"

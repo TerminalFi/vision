@@ -35,6 +35,7 @@ from .var import var
 __all__ = [
     "a",
     "b",
+    "BaseTag",
     "big",
     "body",
     "br",
@@ -55,7 +56,6 @@ __all__ = [
     "MiniHTML",
     "ol",
     "p",
-    "BaseTag",
     "small",
     "span",
     "strong",

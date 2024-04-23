@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Optional
 
 from .tag import Tag
 
@@ -15,7 +15,7 @@ class head(Tag):
             title(content="Example Page Title")
     """
 
-    def __init__(self, content: Union[str, None] = None, *args, **kwargs):
+    def __init__(self, content: Optional[str] = None, *args, **kwargs):
         super().__init__(self.__class__.__name__, *args, **kwargs)
         if content:
             self.content(content)

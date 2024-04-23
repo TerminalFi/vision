@@ -1,5 +1,6 @@
+import html
 import threading
-from typing import Any, Dict, List, Literal, Union
+from typing import Any, Dict, List, Literal, Optional, Union
 
 _lock = threading.RLock()  # Global lock accessible by both the metaclass and the class
 
@@ -9,11 +10,14 @@ class base(type):
     A metaclass for handling automatic parent-child relationships and instance creation within a
     nested context managed environment. This metaclass ensures that every new instance of a class
     using this metaclass is properly linked to its parent in the current context and that all children
-    are automatically added to their respective parent's children list if applicable.
+    are automatically added to their respective parent's children List if applicable.
 
     The locking mechanism (_lock) is used to ensure that instance creation and parent-child linkage
     are thread-safe operations, preventing race conditions in a multi-threaded environment.
     """
+
+    _current = None  # Class variable to track the current context globally
+
     def __call__(cls, *args, **kwargs):
         with _lock:  # Use the global lock
             instance = super().__call__(*args, **kwargs)
@@ -39,16 +43,17 @@ class BaseTag(metaclass=base):
         - Use the __enter__ and __exit__ methods to manage context and enable nesting.
         - This class uses a metaclass for instance creation control and parent-child relationship management.
     """
+
     _current = None  # Class variable to track the current context globally
 
     def __init__(
         self,
         tag: str,
-        id: Union[str, None] = None,
+        id: Optional[str] = None,
         classes: Union[List[str], None] = None,
     ) -> None:
         self.tag: str = tag
-        self.id: str | None = id
+        self.id: Optional[str] = id
         self._classes: List[str] = classes if classes is not None else []
         self._styles: Dict[Any, Any] = {}
         self._attributes: Dict[str, str] = {}
@@ -56,19 +61,17 @@ class BaseTag(metaclass=base):
         self.parent = None
 
     # Ensure all chaining methods return 'self' and are available in all relevant classes
-    def __enter__(self) -> 'BaseTag':
+    def __enter__(self) -> "BaseTag":
         # This might be a stub if BaseTag should not directly handle content
         raise NotImplementedError("This method should be overridden in subclasses")
 
-
     # Ensure all chaining methods return 'self' and are available in all relevant classes
-    def __exit__(self, exc_type, exc_val, exc_tb) -> 'BaseTag':
+    def __exit__(self, exc_type, exc_val, exc_tb) -> "BaseTag":
         # This might be a stub if BaseTag should not directly handle content
         raise NotImplementedError("This method should be overridden in subclasses")
 
-
     # Ensure all chaining methods return 'self' and are available in all relevant classes
-    def content(self, text: str) -> 'BaseTag':
+    def content(self, text: str) -> "BaseTag":
         # This might be a stub if BaseTag should not directly handle content
         raise NotImplementedError("This method should be overridden in subclasses")
 
@@ -92,14 +95,14 @@ class BaseTag(metaclass=base):
     @property
     def classes(self) -> List[str]:
         with _lock:  #
-            return list(self._classes)
+            return List(self._classes)
 
     @classes.setter
     def classes(self, value: str):
         with _lock:
             self._classes.append(value)
 
-    def set_classes(self, mode: Literal['append', 'override'], value: str) -> "BaseTag":
+    def set_classes(self, mode: Literal["append", "override"], value: str) -> "BaseTag":
         with _lock:
             if mode == "append":
                 self._classes.append(value)
@@ -120,13 +123,15 @@ class BaseTag(metaclass=base):
 
     def set_attribute(self, key: str, value: str) -> "BaseTag":
         with _lock:
+            if not value.startswith("subl:"):
+                value = html.escape(value)
             self._attributes[key] = value
         return self
 
     def href(self, value: str) -> "BaseTag":
         if self.tag != "a":
             raise ValueError("href is only available for <a> tags")
-        self._attributes["href"] = value
+        self.set_attribute("href", value)
         return self
 
     # Dimension Attributes
@@ -170,8 +175,8 @@ class BaseTag(metaclass=base):
     def display_block(self) -> "BaseTag":
         return self.set_style("display", "block")
 
-    def display_list_item(self) -> "BaseTag":
-        return self.set_style("display", "list-item")
+    def display_List_item(self) -> "BaseTag":
+        return self.set_style("display", "List-item")
 
     def display_inline_block(self) -> "BaseTag":
         return self.set_style("display", "inline-block")

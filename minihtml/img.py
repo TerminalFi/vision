@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Optional
 
 from .tag import SelfClosingTag
 
@@ -15,7 +15,7 @@ class img(SelfClosingTag):
         image.set_attribute("alt", "Description of the image")
     """
 
-    def __init__(self, src: Union[str, None], *args, **kwargs):
+    def __init__(self, src: Optional[str], *args, **kwargs):
         super().__init__(self.__class__.__name__, *args, **kwargs)
         if src:
             self.set_attribute("src", src)
