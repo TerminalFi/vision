@@ -62,9 +62,12 @@ class Tag(BaseTag):
         return self
 
     # Content Management
-    def content(self, content: str) -> "Tag":
+    def content(self, content: str, escape: bool = True) -> "Tag":
         with _lock:
-            self._content = _remove_entities(html.escape(content))
+            if escape:
+                self._content = _remove_entities(html.escape(content))
+            else:
+                self._content = content
         return self
 
     def render(self) -> str:

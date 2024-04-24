@@ -122,7 +122,6 @@ class CSSProperty:
 
     def validate(self, value: str) -> bool:
         if self.allowed_values is None or len(self.allowed_values) == 0 or value in self.allowed_values:
-            print(self.allowed_values)
             return True
         else:
             raise ValueError(
