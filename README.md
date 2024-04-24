@@ -1,7 +1,7 @@
 
-# MiniHTML Library
+# Vision Library
 
-The MiniHTML library provides a simple and lightweight way to generate HTML content programmatically in Python. It allows you to create HTML elements, style them, and build complex HTML structures using a fluent interface.
+The Vision library provides a simple and lightweight way to generate HTML content programmatically in Python. It allows you to create HTML elements, style them, and build complex HTML structures using a fluent interface.
 
 ## Features
 
@@ -18,17 +18,19 @@ TODO
 
 ## Usage
 
-Here's a simple example demonstrating how to use MiniHTML to create an HTML document:
+Here's a simple example demonstrating how to use Vision to create an HTML document:
 
 ```python
-from minihtml import body, div, p, h1, Tag
+from vision import body, div, p, h1, Tag
+from vision.context import Context
 
-root = Tag("html")
+ctx = Context()
+root = Tag(ctx, "html")
 with root:
-  with body():
-    with div():
-      h1("Welcome to MiniHTML")
-      p("This is a simple HTML document generated using MiniHTML.")
+  with body(ctx):
+    with div(ctx):
+      h1(ctx, "Welcome to MiniHTML")
+      p(ctx, "This is a simple HTML document generated using MiniHTML.")
 
 print(root.render())
 ```
