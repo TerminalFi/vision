@@ -4,7 +4,7 @@ from typing import List
 
 import sublime
 
-from st4.minihtml.tag import Tag
+from .tag import Tag
 
 
 class ImageType(Enum):

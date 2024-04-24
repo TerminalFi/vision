@@ -73,7 +73,16 @@ class Attribute:
     allowed_values: Optional[frozenset] = field(default_factory=frozenset)
 
     def validate(self, value: str) -> bool:
-        if self.allowed_values is None or value in self.allowed_values:
+        if self.allowed_values is None or len(self.allowed_values) == 0 or value in self.allowed_values:
+            return True
+        else:
+            raise ValueError(
+                f"Value '{value}' is not allowed for property '{self.name}'. "
+                + f"Allowed values are: {self.allowed_values}"
+            )
+
+    def validate_href(self, value: str) -> bool:
+        if value.startswith("https://") or value.startswith("http://") or value.startswith("subl:"):
             return True
         else:
             raise ValueError(
@@ -92,7 +101,10 @@ class AttributeValidator:
     def validate(self, attribute_name: str, value: str) -> bool:
         for attrib in self.attributes:
             if attrib.name == attribute_name:
-                return attrib.validate(value)
+                if attrib.name == AllowedAttributes.HREF.value:
+                    return attrib.validate_href(value)
+                else:
+                    return attrib.validate(value)
         raise ValueError(f"Attribute '{attribute_name}' is not supported.")
 
 
@@ -109,7 +121,8 @@ class CSSProperty:
     allowed_values: Optional[frozenset] = field(default_factory=frozenset)
 
     def validate(self, value: str) -> bool:
-        if self.allowed_values is None or value in self.allowed_values:
+        if self.allowed_values is None or len(self.allowed_values) == 0 or value in self.allowed_values:
+            print(self.allowed_values)
             return True
         else:
             raise ValueError(
@@ -139,6 +152,10 @@ css_validator.add_property(CSSProperty("border-bottom"))
 css_validator.add_property(CSSProperty("border-color"))
 css_validator.add_property(CSSProperty("border-left"))
 css_validator.add_property(CSSProperty("border-radius"))
+css_validator.add_property(CSSProperty("border-top-right-radius"))
+css_validator.add_property(CSSProperty("border-top-left-radius"))
+css_validator.add_property(CSSProperty("border-bottom-right-radius"))
+css_validator.add_property(CSSProperty("border-bottom-left-radius"))
 css_validator.add_property(CSSProperty("border-right"))
 css_validator.add_property(CSSProperty("border-style"))
 css_validator.add_property(CSSProperty("border-top"))
