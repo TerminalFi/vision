@@ -5,7 +5,7 @@ from typing import Optional, Set
 import sublime
 
 
-class Tags(Enum):
+class AllowedTags(Enum):
     A = "a"
     B = "b"
     BIG = "big"
@@ -38,14 +38,71 @@ class Tags(Enum):
     VAR = "var"
 
 
-class Attributes(Enum):
+@dataclass(frozen=True)
+class Tag:
+    name: AllowedTags
+
+
+@dataclass
+class TagValidator:
+    allowed_tags: Set[AllowedTags] = field(default_factory=set)
+
+    def add_tag(self, tag: AllowedTags):
+        """Adds a new tag to the set of allowed tags"""
+        self.allowed_tags.add(tag)
+
+    def is_valid_tag(self, tag_name: str) -> bool:
+        """Checks if a tag is in the allowed set"""
+        return AllowedTags(tag_name) in self.allowed_tags
+
+
+tag_validator = TagValidator()
+[tag_validator.add_tag(tag) for tag in AllowedTags]
+
+
+class AllowedAttributes(Enum):
     HREF = "href"
     ID = "id"
     CLASS = "class"
     TITLE = "title"
 
 
+@dataclass(frozen=True)
+class Attribute:
+    name: str
+    allowed_values: Optional[Set[str]] = None
+
+    def validate(self, value: str) -> bool:
+        if self.allowed_values is None or value in self.allowed_values:
+            return True
+        else:
+            raise ValueError(
+                f"Value '{value}' is not allowed for property '{self.name}'. "
+                + f"Allowed values are: {self.allowed_values}"
+            )
+
+
 @dataclass
+class AttributeValidator:
+    attributes: Set[Attribute] = field(default_factory=set)
+
+    def add_attribute(self, property: Attribute):
+        self.attributes.add(property)
+
+    def validate(self, attribute_name: str, value: str) -> bool:
+        for attrib in self.attributes:
+            if attrib.name == attribute_name:
+                return attrib.validate(value)
+        raise ValueError(f"Attribute '{attribute_name}' is not supported.")
+
+
+attribute_validator = AttributeValidator()
+attribute_validator.add_attribute(Attribute(AllowedAttributes.HREF.value, {"https://", "http://", "subl:"}))
+attribute_validator.add_attribute(Attribute(AllowedAttributes.CLASS.value))
+attribute_validator.add_attribute(Attribute(AllowedAttributes.ID.value))
+attribute_validator.add_attribute(Attribute(AllowedAttributes.TITLE.value))
+
+
 @dataclass(frozen=True)
 class CSSProperty:
     name: str
@@ -57,7 +114,7 @@ class CSSProperty:
         else:
             raise ValueError(
                 f"Value '{value}' is not allowed for property '{self.name}'. "
-                f"Allowed values are: {self.allowed_values}"
+                + f"Allowed values are: {self.allowed_values}"
             )
 
 

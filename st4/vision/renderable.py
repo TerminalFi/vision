@@ -2,7 +2,7 @@ import html
 import threading
 from typing import Any, Dict, List, Literal, Optional, Union
 
-from .supported import css_validator
+from .supported import attribute_validator, css_validator
 
 _lock = threading.RLock()  # Global lock accessible by both the metaclass and the class
 
@@ -89,8 +89,7 @@ class BaseTag(metaclass=base):
             self._styles.update(style_dict)
 
     def set_style(self, key: str, value: str) -> "BaseTag | ValueError":
-        if not css_validator.validate(key, value):
-            raise ValueError(f"Invalid value '{value}' for CSS property '{key}'")
+        css_validator.validate(key, value)
         with _lock:
             self._styles[key] = value
         return self
@@ -126,6 +125,7 @@ class BaseTag(metaclass=base):
             self._attributes.update(value)
 
     def set_attribute(self, key: str, value: str) -> "BaseTag":
+        attribute_validator.validate(key, value)
         with _lock:
             if not value.startswith("subl:"):
                 value = html.escape(value)
