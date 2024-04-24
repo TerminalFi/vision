@@ -70,7 +70,7 @@ class AllowedAttributes(Enum):
 @dataclass(frozen=True)
 class Attribute:
     name: str
-    allowed_values: Optional[Set[str]] = None
+    allowed_values: Optional[frozenset] = field(default_factory=frozenset)
 
     def validate(self, value: str) -> bool:
         if self.allowed_values is None or value in self.allowed_values:
@@ -97,7 +97,7 @@ class AttributeValidator:
 
 
 attribute_validator = AttributeValidator()
-attribute_validator.add_attribute(Attribute(AllowedAttributes.HREF.value, {"https://", "http://", "subl:"}))
+attribute_validator.add_attribute(Attribute(AllowedAttributes.HREF.value, frozenset(["https://", "http://", "subl:"])))
 attribute_validator.add_attribute(Attribute(AllowedAttributes.CLASS.value))
 attribute_validator.add_attribute(Attribute(AllowedAttributes.ID.value))
 attribute_validator.add_attribute(Attribute(AllowedAttributes.TITLE.value))
@@ -106,7 +106,7 @@ attribute_validator.add_attribute(Attribute(AllowedAttributes.TITLE.value))
 @dataclass(frozen=True)
 class CSSProperty:
     name: str
-    allowed_values: Optional[Set[str]] = field(default=None)
+    allowed_values: Optional[frozenset] = field(default_factory=frozenset)
 
     def validate(self, value: str) -> bool:
         if self.allowed_values is None or value in self.allowed_values:
@@ -146,18 +146,20 @@ css_validator.add_property(CSSProperty("border-width"))
 css_validator.add_property(CSSProperty("bottom"))
 css_validator.add_property(CSSProperty("color"))
 if sublime.version() >= "4085":
-    css_validator.add_property(CSSProperty("display", {"none", "block", "inline", "inline-block", "list-item"}))
+    css_validator.add_property(
+        CSSProperty("display", frozenset(["none", "block", "inline", "inline-block", "list-item"]))
+    )
 else:
-    css_validator.add_property(CSSProperty("display", {"none", "block", "inline", "list-item"}))
+    css_validator.add_property(CSSProperty("display", frozenset(["none", "block", "inline", "list-item"])))
 
 css_validator.add_property(CSSProperty("font-family"))
 css_validator.add_property(CSSProperty("font-size"))
-css_validator.add_property(CSSProperty("font-style", {"normal", "italic"}))
-css_validator.add_property(CSSProperty("font-weight", {"normal", "bold"}))
+css_validator.add_property(CSSProperty("font-style", frozenset(["normal", "italic"])))
+css_validator.add_property(CSSProperty("font-weight", frozenset(["normal", "bold"])))
 css_validator.add_property(CSSProperty("height"))
 css_validator.add_property(CSSProperty("left"))
 css_validator.add_property(CSSProperty("line-height"))
-css_validator.add_property(CSSProperty("list-style-type", {"circle", "disc", "square"}))
+css_validator.add_property(CSSProperty("list-style-type", frozenset(["circle", "disc", "square"])))
 css_validator.add_property(CSSProperty("margin"))
 css_validator.add_property(CSSProperty("margin-bottom"))
 css_validator.add_property(CSSProperty("margin-left"))
@@ -168,15 +170,15 @@ css_validator.add_property(CSSProperty("padding-bottom"))
 css_validator.add_property(CSSProperty("padding-left"))
 css_validator.add_property(CSSProperty("padding-right"))
 css_validator.add_property(CSSProperty("padding-top"))
-css_validator.add_property(CSSProperty("position", {"relative", "static"}))
+css_validator.add_property(CSSProperty("position", frozenset(["relative", "static"])))
 css_validator.add_property(CSSProperty("right"))
-css_validator.add_property(CSSProperty("text-align", {"left", "right", "center"}))
-css_validator.add_property(CSSProperty("text-decoration", {"none", "underline"}))
+css_validator.add_property(CSSProperty("text-align", frozenset(["left", "right", "center"])))
+css_validator.add_property(CSSProperty("text-decoration", frozenset(["none", "underline"])))
 css_validator.add_property(CSSProperty("top"))
 if sublime.version() >= "4173":
-    css_validator.add_property(CSSProperty("white-space", {"normal", "nowrap", "pre", "pre-wrap"}))
+    css_validator.add_property(CSSProperty("white-space", frozenset(["normal", "nowrap", "pre", "pre-wrap"])))
 else:
-    css_validator.add_property(CSSProperty("white-space", {"normal", "nowrap"}))
+    css_validator.add_property(CSSProperty("white-space", frozenset(["normal", "nowrap"])))
 css_validator.add_property(CSSProperty("width"))
 
 
