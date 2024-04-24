@@ -1,7 +1,8 @@
 import base64
 from enum import Enum
-from typing import List
+from typing import List, Optional
 
+import mdpopups
 import sublime
 
 from .tag import Tag
@@ -32,6 +33,32 @@ def _image_to_base64(path: str, image_type: ImageType = ImageType.PNG) -> str:
         return path
     else:
         raise ValueError("Invalid image type")
+
+
+class CodeBlock(Tag):
+    """
+    Represents a block of code or a code snippet within a web page.
+    The code block is styled to display monospaced text and may include syntax highlighting.
+
+    Attributes:
+        content (str): The code snippet or block of code to display.
+        language (str): The programming language or syntax to apply highlighting.
+        line_numbers (bool): Whether to display line numbers for the code block.
+    """
+
+    def __init__(self, code: str, view: Optional[sublime.View] = None):
+        self.code = code
+        if view is None:
+            window = sublime.active_window()
+            if window is None:
+                raise ValueError("No active window found")
+            self.view = window.active_view()
+        else:
+            self.view = view
+
+    def render(self):
+        # Returns an HTML string for a preformatted code block with the specified content
+        return mdpopups.md2html(self.view, self.code, md=True)
 
 
 class Unit(Enum):
