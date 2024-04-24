@@ -3,6 +3,7 @@ from typing import Optional
 import mdpopups
 import sublime
 
+from .context import Context
 from .tag import Tag
 
 
@@ -14,8 +15,8 @@ class Vision(Tag):
     in Sublime Text or return the generated HTML.
     """
 
-    def __init__(self):
-        super().__init__("html")
+    def __init__(self, ctx: Context):
+        super().__init__(ctx, "html")
         self.sheet_name: str = ""
         self.sheet: Optional[sublime.Sheet] = None
 

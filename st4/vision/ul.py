@@ -1,3 +1,4 @@
+from .context import Context
 from .tag import Tag
 
 
@@ -13,5 +14,5 @@ class ul(Tag):
             li(content="Second item")
     """
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(self.__class__.__name__, *args, **kwargs)
+    def __init__(self, ctx: Context, *args, **kwargs):
+        super().__init__(ctx, self.__class__.__name__, *args, **kwargs)

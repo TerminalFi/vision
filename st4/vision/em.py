@@ -1,5 +1,6 @@
 from typing import Optional
 
+from .context import Context
 from .tag import Tag
 
 
@@ -12,7 +13,8 @@ class em(Tag):
     Example usage:
         emphasized_text = em(content="This text will be emphasized, typically styled in italics.")
     """
-    def __init__(self, content: Optional[str] = None, *args, **kwargs):
-        super().__init__(self.__class__.__name__, *args, **kwargs)
+
+    def __init__(self, ctx: Context, content: Optional[str] = None, *args, **kwargs):
+        super().__init__(ctx, self.__class__.__name__, *args, **kwargs)
         if content:
             self.content(content)

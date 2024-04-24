@@ -5,6 +5,7 @@ from typing import List, Optional
 import mdpopups
 import sublime
 
+from .context import Context
 from .tag import Tag
 
 
@@ -118,8 +119,8 @@ class Button(Tag):
         to avoid the underline commonly associated with hyperlinks.
     """
 
-    def __init__(self, label: str, href: str = ""):
-        super().__init__("a")
+    def __init__(self, ctx: Context, label: str, href: str = ""):
+        super().__init__(ctx, "a")
         self.bg_color("var(--background)")  # Set background color using a CSS variable
         self.color("var(--foreground)")  # Set text color using a CSS variable
         self.border_radius(".5rem")  # Rounded corners with a radius of .5 rem

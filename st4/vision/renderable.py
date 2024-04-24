@@ -1,10 +1,8 @@
 import html
-import threading
 from typing import Any, Dict, List, Literal, Optional, Union
 
+from .context import Context
 from .supported import attribute_validator, css_validator
-
-_lock = threading.RLock()  # Global lock accessible by both the metaclass and the class
 
 
 class base(type):
@@ -18,16 +16,12 @@ class base(type):
     are thread-safe operations, preventing race conditions in a multi-threaded environment.
     """
 
-    _current = None  # Class variable to track the current context globally
-
     def __call__(cls, *args, **kwargs):
-        with _lock:  # Use the global lock
-            instance = super().__call__(*args, **kwargs)
-            if cls._current is not None:
-                instance.parent = cls._current
-                cls._current._children.append(instance)
-            else:
-                instance.parent = None
+        instance = super().__call__(*args, **kwargs)
+        with instance.ctx._lock:  # Use the global lock
+            instance.parent = instance.ctx.current
+            if instance.ctx.current is not None:
+                instance.ctx.current._children.append(instance)
         return instance
 
 
@@ -50,10 +44,12 @@ class BaseTag(metaclass=base):
 
     def __init__(
         self,
+        ctx: Context,
         tag: str,
         id: Optional[str] = None,
         classes: Union[List[str], None] = None,
     ) -> None:
+        self.ctx = ctx
         self.tag: str = tag
         self.id: Optional[str] = id
         self._classes: List[str] = classes if classes is not None else []
@@ -80,33 +76,33 @@ class BaseTag(metaclass=base):
     # Style Management
     @property
     def styles(self) -> dict:
-        with _lock:  #
+        with self.ctx._lock:  #
             return dict(self._styles)
 
     @styles.setter
     def styles(self, style_dict: dict):
-        with _lock:
+        with self.ctx._lock:
             self._styles.update(style_dict)
 
     def set_style(self, key: str, value: str) -> "BaseTag | ValueError":
         css_validator.validate(key, value)
-        with _lock:
+        with self.ctx._lock:
             self._styles[key] = value
         return self
 
     # Class Management
     @property
     def classes(self) -> List[str]:
-        with _lock:  #
+        with self.ctx._lock:  #
             return list(self._classes)
 
     @classes.setter
     def classes(self, value: str):
-        with _lock:
+        with self.ctx._lock:
             self._classes.append(value)
 
     def set_classes(self, mode: Literal["append", "override"], value: str) -> "BaseTag":
-        with _lock:
+        with self.ctx._lock:
             if mode == "append":
                 self._classes.append(value)
             elif mode == "override":
@@ -116,17 +112,17 @@ class BaseTag(metaclass=base):
     # Attribute Management
     @property
     def attributes(self) -> dict:
-        with _lock:
+        with self.ctx._lock:
             return dict(self._attributes)
 
     @attributes.setter
     def attributes(self, value: dict):
-        with _lock:
+        with self.ctx._lock:
             self._attributes.update(value)
 
     def set_attribute(self, key: str, value: str) -> "BaseTag":
         attribute_validator.validate(key, value)
-        with _lock:
+        with self.ctx._lock:
             if not value.startswith("subl:"):
                 value = html.escape(value)
             self._attributes[key] = value

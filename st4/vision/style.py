@@ -1,5 +1,6 @@
 from typing import Dict, Optional
 
+from .context import Context
 from .renderable import BaseTag
 
 
@@ -19,7 +20,8 @@ class Style(BaseTag):
 
     """
 
-    def __init__(self, default_css: Optional[Dict]):
+    def __init__(self, ctx: Context, default_css: Optional[Dict]):
+        self.ctx = ctx
         self.css = default_css or {}
         self.tag = self.__class__.__name__
 
