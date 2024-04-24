@@ -1,11 +1,12 @@
 import base64
 from enum import Enum
-from typing import List, Optional
+from typing import List, Optional, Union
 
 import mdpopups
 import sublime
 
 from .context import Context
+from .div import div
 from .tag import Tag
 
 
@@ -36,6 +37,52 @@ def _image_to_base64(path: str, image_type: ImageType = ImageType.PNG) -> str:
         raise ValueError("Invalid image type")
 
 
+class Card(Tag):
+    def __init__(
+        self,
+        ctx: Context,
+        header: Optional[Union[Tag, str]],
+        body: Optional[Union[Tag, str]],
+        footer: Optional[Union[Tag, str]],
+    ):
+        super().__init__(ctx, "div")
+        self.set_classes("append", "card")
+        self.header = header
+        self.body = body
+        self.footer = footer
+
+        self._setup_styles()
+        self._generate_card()
+
+    def _setup_styles(self):
+        self.set_style("border", "1px solid #ccc")  # Light grey border
+        self.set_style("border-radius", "8px")  # Rounded corners
+        self.set_style("padding", "20px")  # Padding inside the card
+        self.set_style("margin", "10px")  # Margin around the card
+        self.set_style("background-color", "#fff")  # White background
+
+    def _generate_card(self):
+        with self:
+            if self.header is not None:
+                if isinstance(self.header, Tag):
+                    self.header.ctx = self.ctx
+                    self._children.append(self.header)
+                elif isinstance(self.header, str):
+                    div(self.ctx, self.header)
+            if self.body is not None:
+                if isinstance(self.body, Tag):
+                    self.body.ctx = self.ctx
+                    self._children.append(self.body)
+                elif isinstance(self.body, str):
+                    div(self.ctx, self.body).border_top("1px", "solid", "#ccc").border_bottom("1px", "solid", "#ccc")
+            if self.footer is not None:
+                if isinstance(self.footer, Tag):
+                    self.footer.ctx = self.ctx
+                    self._children.append(self.footer)
+                elif isinstance(self.footer, str):
+                    div(self.ctx, self.footer)
+
+
 class CodeBlock(Tag):
     """
     Represents a block of code or a code snippet within a web page.
@@ -58,7 +105,8 @@ class CodeBlock(Tag):
 
     def render(self):
         # Returns an HTML string for a preformatted code block with the specified content
-        return mdpopups.md2html(self.view, self.code, md=True)
+        self.content(mdpopups.md2html(self.view, self.code, md=True), escape=False)
+        return super().render()
 
 
 class Unit(Enum):

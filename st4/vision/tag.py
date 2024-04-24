@@ -43,16 +43,18 @@ class Tag(BaseTag):
         self._content: str = ""
 
     def __enter__(self):
-        self._previous_current = self.ctx.current
-        self.ctx.push(self)
+        if self.ctx is not None:
+            self._previous_current = self.ctx.current
+            self.ctx.push(self)  # type: ignore
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self.ctx.pop(self)
+        if self.ctx is not None:
+            self.ctx.pop(self)
 
     # Child Handling
     def child(self, *elems: Union["Tag", Style, Text, Iterable[Union["Tag", Style, Text]]]):
-        with self.ctx._lock:
+        with self.ctx._lock:  # type: ignore
             for elem in elems:
                 if isinstance(elem, (Tag, Style, Text)):
                     self._children.append(elem)
@@ -62,7 +64,7 @@ class Tag(BaseTag):
 
     # Content Management
     def content(self, content: str, escape: bool = True) -> "Tag":
-        with self.ctx._lock:
+        with self.ctx._lock:  # type: ignore
             if escape:
                 self._content = _remove_entities(html.escape(content))
             else:
@@ -76,7 +78,7 @@ class Tag(BaseTag):
         if self._should_render is False:
             return ""
 
-        with self.ctx._lock:
+        with self.ctx._lock:  # type: ignore
             # Convert styles dictionary to a style string
             style_str = "; ".join(f"{key}: {value}" for key, value in self._styles.items())
             style_attr = f' style="{style_str}"' if style_str else ""
@@ -112,11 +114,11 @@ class Tag(BaseTag):
         """
         Recursively query the element and its children for an element with a specific id, ensuring thread safety.
         """
-        with self.ctx._lock:
+        with self.ctx._lock:  # type: ignore
             if self.id == id_value:
                 return self
             for child in self._children:
-                if isinstance(child, (Style, Text)):
+                if isinstance(child, (Style, Text, SelfClosingTag)):
                     continue
                 result = child.query_by_id(id_value)
                 if result is not None:
@@ -198,7 +200,7 @@ class SelfClosingTag(BaseTag):
         if self._should_render is False:
             return ""
 
-        with self.ctx._lock:
+        with self.ctx._lock:  # type: ignore
             # Convert styles dictionary to a style string
             style_str = "; ".join(f"{key}: {value}" for key, value in self._styles.items())
             style_attr = f' style="{style_str}"' if style_str else ""

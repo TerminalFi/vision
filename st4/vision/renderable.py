@@ -18,6 +18,10 @@ class base(type):
 
     def __call__(cls, *args, **kwargs):
         instance = super().__call__(*args, **kwargs)
+        # test
+        if instance.ctx is None:
+            return instance
+
         with instance.ctx._lock:  # Use the global lock
             instance.parent = instance.ctx.current
             if instance.ctx.current is not None:
@@ -40,12 +44,10 @@ class BaseTag(metaclass=base):
         - This class uses a metaclass for instance creation control and parent-child relationship management.
     """
 
-    _current = None  # Class variable to track the current context globally
-
     def __init__(
         self,
-        ctx: Context,
-        tag: str,
+        ctx: Optional[Context] = None,
+        tag: str = "",
         id: Optional[str] = None,
         classes: Union[List[str], None] = None,
     ) -> None:
@@ -76,33 +78,48 @@ class BaseTag(metaclass=base):
     # Style Management
     @property
     def styles(self) -> dict:
-        with self.ctx._lock:  #
+        if self.ctx:
+            with self.ctx._lock:  # type: ignore
+                return dict(self._styles)
+        else:
             return dict(self._styles)
 
     @styles.setter
     def styles(self, style_dict: dict):
-        with self.ctx._lock:
+        if self.ctx:
+            with self.ctx._lock:  # type: ignore
+                self._styles.update(style_dict)
+        else:
             self._styles.update(style_dict)
 
     def set_style(self, key: str, value: str) -> "BaseTag | ValueError":
         css_validator.validate(key, value)
-        with self.ctx._lock:
+        if self.ctx:
+            with self.ctx._lock:  # type: ignore
+                self._styles[key] = value
+        else:
             self._styles[key] = value
         return self
 
     # Class Management
     @property
     def classes(self) -> List[str]:
-        with self.ctx._lock:  #
+        with self.ctx._lock:  # type: ignore
             return list(self._classes)
 
     @classes.setter
     def classes(self, value: str):
-        with self.ctx._lock:
+        with self.ctx._lock:  # type: ignore
             self._classes.append(value)
 
     def set_classes(self, mode: Literal["append", "override"], value: str) -> "BaseTag":
-        with self.ctx._lock:
+        if self.ctx:
+            with self.ctx._lock:  # type: ignore
+                if mode == "append":
+                    self._classes.append(value)
+                elif mode == "override":
+                    self._classes = [value]
+        else:
             if mode == "append":
                 self._classes.append(value)
             elif mode == "override":
@@ -112,17 +129,28 @@ class BaseTag(metaclass=base):
     # Attribute Management
     @property
     def attributes(self) -> dict:
-        with self.ctx._lock:
+        if self.ctx:
+            with self.ctx._lock:  # type: ignore
+                return dict(self._attributes)
+        else:
             return dict(self._attributes)
 
     @attributes.setter
     def attributes(self, value: dict):
-        with self.ctx._lock:
+        if self.ctx:
+            with self.ctx._lock:  # type: ignore
+                self._attributes.update(value)
+        else:
             self._attributes.update(value)
 
     def set_attribute(self, key: str, value: str) -> "BaseTag":
         attribute_validator.validate(key, value)
-        with self.ctx._lock:
+        if self.ctx:
+            with self.ctx._lock:  # type: ignore
+                if not value.startswith("subl:"):
+                    value = html.escape(value)
+                self._attributes[key] = value
+        else:
             if not value.startswith("subl:"):
                 value = html.escape(value)
             self._attributes[key] = value
