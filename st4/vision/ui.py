@@ -43,11 +43,10 @@ class CodeBlock(Tag):
 
     Attributes:
         content (str): The code snippet or block of code to display.
-        language (str): The programming language or syntax to apply highlighting.
-        line_numbers (bool): Whether to display line numbers for the code block.
     """
 
-    def __init__(self, code: str, view: Optional[sublime.View] = None):
+    def __init__(self, ctx: Context, code: str, view: Optional[sublime.View] = None):
+        super().__init__(ctx, "div")
         self.code = code
         if view is None:
             window = sublime.active_window()
@@ -93,8 +92,8 @@ class Spacer(Tag):
         It effectively serves as a horizontal gap or space in web layouts, using CSS to set its width.
     """
 
-    def __init__(self, space: int = 1, unit: Unit = Unit.REM):
-        super().__init__("img")
+    def __init__(self, ctx: Context, space: int = 1, unit: Unit = Unit.REM):
+        super().__init__(ctx, "img")
         self.space = space  # Define the amount of space (width) the spacer should take up
         self.unit = unit.value  # Define the unit of measurement for the spacer width
 
@@ -183,8 +182,8 @@ class Link(Tag):
         It serves both as navigational and aesthetic purposes in web interfaces.
     """
 
-    def __init__(self, label: str, href: str = ""):
-        super().__init__("a")
+    def __init__(self, ctx: Context, label: str, href: str = ""):
+        super().__init__(ctx, "a")
         self.bg_color("var(--background)")
         self.color("var(--foreground)")
         self.content(label)
@@ -205,10 +204,10 @@ class Icon(Tag):
         The icon's background is set to transparent to blend seamlessly with the UI.
     """
 
-    def __init__(self, src: str, image_type: ImageType = ImageType.PNG, alt: str = ""):
-        super().__init__("img")
+    def __init__(self, ctx: Context, src: str, image_type: ImageType = ImageType.PNG, alt: str = ""):
+        super().__init__(ctx, "img")
         try:
-            image_src = _image_to_base64(image_type, src)
+            image_src = _image_to_base64(src, image_type)
         except Exception:
             image_src = src
         self.set_attribute("src", image_src)
@@ -231,10 +230,10 @@ class Image(Tag):
         falling back to the original source if conversion fails.
     """
 
-    def __init__(self, src: str, image_type: ImageType = ImageType.PNG, alt: str = ""):
-        super().__init__("img")
+    def __init__(self, ctx: Context, src: str, image_type: ImageType = ImageType.PNG, alt: str = ""):
+        super().__init__(ctx, "img")
         try:
-            image_src = _image_to_base64(image_type, src)
+            image_src = _image_to_base64(src, image_type)
         except Exception:
             image_src = src
         self.set_attribute("src", image_src)
