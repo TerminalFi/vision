@@ -3,7 +3,8 @@ import html.parser
 import re
 from typing import Any, Callable, Iterable, List, Union
 
-from .renderable import BaseTag, _lock
+from .context import Context
+from .renderable import BaseTag
 from .style import Style
 from .text import Text
 
@@ -42,18 +43,16 @@ class Tag(BaseTag):
         self._content: str = ""
 
     def __enter__(self):
-        _lock.acquire()
-        self._previous_current = BaseTag._current
-        BaseTag._current = self
+        self._previous_current = self.ctx.current
+        self.ctx.push(self)
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        BaseTag._current = self._previous_current
-        _lock.release()
+        self.ctx.pop(self)
 
     # Child Handling
     def child(self, *elems: Union["Tag", Style, Text, Iterable[Union["Tag", Style, Text]]]):
-        with _lock:
+        with self.ctx._lock:
             for elem in elems:
                 if isinstance(elem, (Tag, Style, Text)):
                     self._children.append(elem)
@@ -63,7 +62,7 @@ class Tag(BaseTag):
 
     # Content Management
     def content(self, content: str, escape: bool = True) -> "Tag":
-        with _lock:
+        with self.ctx._lock:
             if escape:
                 self._content = _remove_entities(html.escape(content))
             else:
@@ -77,7 +76,7 @@ class Tag(BaseTag):
         if self._should_render is False:
             return ""
 
-        with _lock:
+        with self.ctx._lock:
             # Convert styles dictionary to a style string
             style_str = "; ".join(f"{key}: {value}" for key, value in self._styles.items())
             style_attr = f' style="{style_str}"' if style_str else ""
@@ -113,7 +112,7 @@ class Tag(BaseTag):
         """
         Recursively query the element and its children for an element with a specific id, ensuring thread safety.
         """
-        with _lock:
+        with self.ctx._lock:
             if self.id == id_value:
                 return self
             for child in self._children:
@@ -183,10 +182,10 @@ class SelfClosingTag(BaseTag):
             br.child(Tag('span'))  # This will raise an error
     """
 
-    def __init__(self, tag, **kwargs):
+    def __init__(self, ctx: Context, tag, *args, **kwargs):
         if tag not in SELF_CLOSING_TAGS:
             raise ValueError(f"{tag} is not a valid self-closing tag")
-        super().__init__(tag, **kwargs)
+        super().__init__(ctx, tag, *args, **kwargs)
 
     def child(self, *elems):
         # Override to prevent any children from being added
@@ -199,7 +198,7 @@ class SelfClosingTag(BaseTag):
         if self._should_render is False:
             return ""
 
-        with _lock:
+        with self.ctx._lock:
             # Convert styles dictionary to a style string
             style_str = "; ".join(f"{key}: {value}" for key, value in self._styles.items())
             style_attr = f' style="{style_str}"' if style_str else ""

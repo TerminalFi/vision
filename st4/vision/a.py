@@ -1,3 +1,4 @@
+from .context import Context
 from .tag import Tag
 
 
@@ -15,7 +16,7 @@ class a(Tag):
         a(href="https://example.com", content="Visit Example.com")
     """
 
-    def __init__(self, href: str, content: str, *args, **kwargs):
-        super().__init__(self.__class__.__name__, *args, **kwargs)
+    def __init__(self, ctx: Context, href: str, content: str, *args, **kwargs):
+        super().__init__(ctx, self.__class__.__name__, *args, **kwargs)
         self.set_attribute("href", href)
         self.content(content)
