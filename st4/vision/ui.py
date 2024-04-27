@@ -5,9 +5,9 @@ from typing import List, Optional, Union
 import mdpopups
 import sublime
 
-from .context import Context
 from .div import div
-from .tag import Tag
+from .tag import tag
+from .types import ContextBase
 
 
 class ImageType(Enum):
@@ -37,13 +37,13 @@ def _image_to_base64(path: str, image_type: ImageType = ImageType.PNG) -> str:
         raise ValueError("Invalid image type")
 
 
-class Card(Tag):
+class Card(tag):
     def __init__(
         self,
-        ctx: Context,
-        header: Optional[Union[Tag, str]],
-        body: Optional[Union[Tag, str]],
-        footer: Optional[Union[Tag, str]],
+        ctx: ContextBase,
+        header: Optional[Union[tag, str]],
+        body: Optional[Union[tag, str]],
+        footer: Optional[Union[tag, str]],
     ):
         super().__init__(ctx, "div")
         self.set_classes("append", "card")
@@ -57,33 +57,32 @@ class Card(Tag):
     def _setup_styles(self):
         self.set_style("border", "1px solid #ccc")  # Light grey border
         self.set_style("border-radius", "8px")  # Rounded corners
-        self.set_style("padding", "20px")  # Padding inside the card
         self.set_style("margin", "10px")  # Margin around the card
         self.set_style("background-color", "#fff")  # White background
 
     def _generate_card(self):
         with self:
             if self.header is not None:
-                if isinstance(self.header, Tag):
+                if isinstance(self.header, tag):
                     self.header.ctx = self.ctx
                     self._children.append(self.header)
                 elif isinstance(self.header, str):
                     div(self.ctx, self.header)
             if self.body is not None:
-                if isinstance(self.body, Tag):
+                if isinstance(self.body, tag):
                     self.body.ctx = self.ctx
                     self._children.append(self.body)
                 elif isinstance(self.body, str):
                     div(self.ctx, self.body).border_top("1px", "solid", "#ccc").border_bottom("1px", "solid", "#ccc")
             if self.footer is not None:
-                if isinstance(self.footer, Tag):
+                if isinstance(self.footer, tag):
                     self.footer.ctx = self.ctx
                     self._children.append(self.footer)
                 elif isinstance(self.footer, str):
                     div(self.ctx, self.footer)
 
 
-class CodeBlock(Tag):
+class CodeBlock(tag):
     """
     Represents a block of code or a code snippet within a web page.
     The code block is styled to display monospaced text and may include syntax highlighting.
@@ -92,7 +91,7 @@ class CodeBlock(Tag):
         content (str): The code snippet or block of code to display.
     """
 
-    def __init__(self, ctx: Context, code: str, view: Optional[sublime.View] = None):
+    def __init__(self, ctx: ContextBase, code: str, view: Optional[sublime.View] = None):
         super().__init__(ctx, "div")
         self.code = code
         if view is None:
@@ -127,7 +126,7 @@ class Unit(Enum):
     PT = "pt"
 
 
-class Spacer(Tag):
+class Spacer(tag):
     """
     A class representing a spacer element implemented using an <img> tag without a source.
     This spacer is used to add horizontal space between elements in a layout.
@@ -140,7 +139,7 @@ class Spacer(Tag):
         It effectively serves as a horizontal gap or space in web layouts, using CSS to set its width.
     """
 
-    def __init__(self, ctx: Context, space: int = 1, unit: Unit = Unit.REM):
+    def __init__(self, ctx: ContextBase, space: int = 1, unit: Unit = Unit.REM):
         super().__init__(ctx, "img")
         self.space = space  # Define the amount of space (width) the spacer should take up
         self.unit = unit.value  # Define the unit of measurement for the spacer width
@@ -150,7 +149,7 @@ class Spacer(Tag):
         return f'<img style="width: {self.space or 0}{self.unit};">'
 
 
-class Button(Tag):
+class Button(tag):
     """
     A class representing a stylized button implemented as a hyperlink (<a> tag).
     This button is styled to look visually distinct and clickable, similar to traditional
@@ -166,7 +165,7 @@ class Button(Tag):
         to avoid the underline commonly associated with hyperlinks.
     """
 
-    def __init__(self, ctx: Context, label: str, href: str = ""):
+    def __init__(self, ctx: ContextBase, label: str, href: str = ""):
         super().__init__(ctx, "a")
         self.bg_color("var(--background)")  # Set background color using a CSS variable
         self.color("var(--foreground)")  # Set text color using a CSS variable
@@ -216,7 +215,7 @@ class ButtonGroup:
             btn.border_radius("0pt")
 
 
-class Link(Tag):
+class Link(tag):
     """
     Represents a hyperlink (<a> tag) that is styled and clickable, used to navigate
     to specified URLs or to trigger actions within a web page.
@@ -230,7 +229,7 @@ class Link(Tag):
         It serves both as navigational and aesthetic purposes in web interfaces.
     """
 
-    def __init__(self, ctx: Context, label: str, href: str = ""):
+    def __init__(self, ctx: ContextBase, label: str, href: str = ""):
         super().__init__(ctx, "a")
         self.bg_color("var(--background)")
         self.color("var(--foreground)")
@@ -238,7 +237,7 @@ class Link(Tag):
         self.href(href)
 
 
-class Icon(Tag):
+class Icon(tag):
     """
     Represents an image used as an icon on web pages, loaded from a specified source.
     The icon uses an <img> tag and can be of various types defined by the ImageType enum.
@@ -252,7 +251,7 @@ class Icon(Tag):
         The icon's background is set to transparent to blend seamlessly with the UI.
     """
 
-    def __init__(self, ctx: Context, src: str, image_type: ImageType = ImageType.PNG, alt: str = ""):
+    def __init__(self, ctx: ContextBase, src: str, image_type: ImageType = ImageType.PNG, alt: str = ""):
         super().__init__(ctx, "img")
         try:
             image_src = _image_to_base64(src, image_type)
@@ -263,7 +262,7 @@ class Icon(Tag):
         self.bg_color("transparent")
 
 
-class Image(Tag):
+class Image(tag):
     """
     Represents a generic image element (<img>) on a web page, sourced from a given URL or path.
     It supports different image types, which are handled by converting to base64 format if necessary.
@@ -278,7 +277,7 @@ class Image(Tag):
         falling back to the original source if conversion fails.
     """
 
-    def __init__(self, ctx: Context, src: str, image_type: ImageType = ImageType.PNG, alt: str = ""):
+    def __init__(self, ctx: ContextBase, src: str, image_type: ImageType = ImageType.PNG, alt: str = ""):
         super().__init__(ctx, "img")
         try:
             image_src = _image_to_base64(src, image_type)

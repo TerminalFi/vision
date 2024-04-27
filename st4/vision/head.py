@@ -1,10 +1,10 @@
 from typing import Optional
 
-from .context import Context
-from .tag import Tag
+from .tag import tag
+from .types import ContextBase
 
 
-class head(Tag):
+class head(tag):
     """
     Represents the 'head' HTML tag, which is used to define the head section of an HTML document.
     This section is a container for metadata (data about data) and is placed between the <html> tag
@@ -16,7 +16,5 @@ class head(Tag):
             title(content="Example Page Title")
     """
 
-    def __init__(self, ctx: Context, content: Optional[str] = None, *args, **kwargs):
-        super().__init__(ctx, self.__class__.__name__, *args, **kwargs)
-        if content:
-            self.content(content)
+    def __init__(self, ctx: ContextBase, content: Optional[str] = None, *args, **kwargs):
+        super().__init__(content, ctx, self.__class__.__name__, *args, **kwargs)

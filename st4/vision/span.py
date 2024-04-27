@@ -1,10 +1,10 @@
 from typing import Optional
 
-from .context import Context
-from .tag import Tag
+from .tag import tag
+from .types import ContextBase
 
 
-class span(Tag):
+class span(tag):
     """
     Represents the 'span' HTML tag, used for grouping inline-elements in a document. It serves as a container for styling
     purposes without introducing any semantic meaning or changing the document structure. It is versatile for applying
@@ -14,7 +14,7 @@ class span(Tag):
         span(content="This text is inside a span.")
     """
 
-    def __init__(self, ctx: Context, content: Optional[str] = None, *args, **kwargs):
+    def __init__(self, ctx: ContextBase, content: Optional[str] = None, *args, **kwargs):
         super().__init__(ctx, self.__class__.__name__, *args, **kwargs)
         if content:
             self.content(content)

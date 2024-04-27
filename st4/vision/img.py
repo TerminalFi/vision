@@ -1,7 +1,7 @@
 from typing import Optional
 
-from .context import Context
 from .tag import SelfClosingTag
+from .types import ContextBase
 
 
 class img(SelfClosingTag):
@@ -16,7 +16,7 @@ class img(SelfClosingTag):
         image.set_attribute("alt", "Description of the image")
     """
 
-    def __init__(self, ctx: Context, src: Optional[str], *args, **kwargs):
+    def __init__(self, ctx: ContextBase, src: Optional[str], *args, **kwargs):
         super().__init__(ctx, self.__class__.__name__, *args, **kwargs)
         if src:
             self.set_attribute("src", src)

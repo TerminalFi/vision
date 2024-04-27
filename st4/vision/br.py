@@ -1,5 +1,5 @@
-from .context import Context
 from .tag import SelfClosingTag
+from .types import ContextBase
 
 
 class br(SelfClosingTag):
@@ -15,5 +15,5 @@ class br(SelfClosingTag):
         p(content="second line after break")
     """
 
-    def __init__(self, ctx: Context, *args, **kwargs):
+    def __init__(self, ctx: ContextBase, *args, **kwargs):
         super().__init__(ctx, self.__class__.__name__, *args, **kwargs)

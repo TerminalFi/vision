@@ -1,10 +1,10 @@
 from typing import Optional
 
-from .context import Context
-from .tag import Tag
+from .tag import tag
+from .types import ContextBase
 
 
-class h2(Tag):
+class h2(tag):
     """
     Represents the 'h2' HTML tag, used for secondary headings on a web page. This tag is typically used to denote
     subheadings or section titles under the main 'h1' heading, helping to organize content hierarchically and improve
@@ -14,7 +14,7 @@ class h2(Tag):
         h2(content="Section Title: Introduction to the Topic")
     """
 
-    def __init__(self, ctx: Context, content: Optional[str] = None):
-        super().__init__(ctx, self.__class__.__name__)
+    def __init__(self, ctx: ContextBase, content: Optional[str] = None, *args, **kwargs):
+        super().__init__(ctx, self.__class__.__name__, *args, **kwargs)
         if content:
             self.content(content)

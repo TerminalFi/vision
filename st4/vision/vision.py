@@ -3,11 +3,11 @@ from typing import Optional
 import mdpopups
 import sublime
 
-from .context import Context
-from .tag import Tag
+from .tag import tag
+from .types import ContextBase
 
 
-class Vision(Tag):
+class Vision(tag):
     """
     Vision is a class that allows
     for the creation of minihtml content
@@ -15,7 +15,7 @@ class Vision(Tag):
     in Sublime Text or return the generated HTML.
     """
 
-    def __init__(self, ctx: Context):
+    def __init__(self, ctx: ContextBase):
         super().__init__(ctx, "html")
         self.sheet_name: str = ""
         self.sheet: Optional[sublime.Sheet] = None

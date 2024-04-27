@@ -1,5 +1,5 @@
-from .context import Context
 from .tag import SelfClosingTag
+from .types import ContextBase
 
 
 class hr(SelfClosingTag):
@@ -13,5 +13,5 @@ class hr(SelfClosingTag):
         # Renders as a horizontal line in HTML, visually separating content.
     """
 
-    def __init__(self, ctx: Context, *args, **kwargs):
+    def __init__(self, ctx: ContextBase, *args, **kwargs):
         super().__init__(ctx, self.__class__.__name__, *args, **kwargs)

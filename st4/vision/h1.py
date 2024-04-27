@@ -1,10 +1,10 @@
 from typing import Optional
 
-from .context import Context
-from .tag import Tag
+from .tag import tag
+from .types import ContextBase
 
 
-class h1(Tag):
+class h1(tag):
     """
     Represents the 'h1' HTML tag, typically used for the main heading of a page. This tag is important for SEO as it
     helps to define the primary subject matter of the web page content. Text within 'h1' is usually displayed in the
@@ -14,7 +14,7 @@ class h1(Tag):
         h1(content="Welcome to My Web Page")
     """
 
-    def __init__(self, ctx: Context, content: Optional[str] = None, *args, **kwargs):
+    def __init__(self, ctx: ContextBase, content: Optional[str] = None, *args, **kwargs):
         super().__init__(ctx, self.__class__.__name__, *args, **kwargs)
         if content:
             self.content(content)

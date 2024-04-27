@@ -1,10 +1,10 @@
 from typing import Optional
 
-from .context import Context
-from .tag import Tag
+from .tag import tag
+from .types import ContextBase
 
 
-class code(Tag):
+class code(tag):
     """
     Represents the 'code' HTML tag, used to display a segment of computer code. By default, content within a 'code' tag
     is displayed in the browser's default monospace font.
@@ -13,7 +13,7 @@ class code(Tag):
         code(content="border-radius")
     """
 
-    def __init__(self, ctx: Context, content: Optional[str] = None, *args, **kwargs):
+    def __init__(self, ctx: ContextBase, content: Optional[str] = None, *args, **kwargs):
         super().__init__(ctx, self.__class__.__name__, *args, **kwargs)
 
         if content:

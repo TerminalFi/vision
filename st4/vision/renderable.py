@@ -1,8 +1,8 @@
 import html
 from typing import Any, Dict, List, Literal, Optional, Union
 
-from .context import Context
 from .supported import attribute_validator, css_validator
+from .types import ContextBase
 
 
 class base(type):
@@ -46,7 +46,7 @@ class BaseTag(metaclass=base):
 
     def __init__(
         self,
-        ctx: Optional[Context] = None,
+        ctx: Optional[ContextBase] = None,
         tag: str = "",
         id: Optional[str] = None,
         classes: Union[List[str], None] = None,
@@ -71,7 +71,11 @@ class BaseTag(metaclass=base):
         raise NotImplementedError("This method should be overridden in subclasses")
 
     # Ensure all chaining methods return 'self' and are available in all relevant classes
-    def content(self, text: str) -> "BaseTag":
+    def content(self, text: str, escape: bool = False) -> "BaseTag":
+        # This might be a stub if BaseTag should not directly handle content
+        raise NotImplementedError("This method should be overridden in subclasses")
+
+    def render(self) -> str:
         # This might be a stub if BaseTag should not directly handle content
         raise NotImplementedError("This method should be overridden in subclasses")
 

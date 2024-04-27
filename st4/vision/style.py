@@ -1,10 +1,9 @@
-from typing import Dict, Optional
+from typing import Any, Dict, Optional
 
-from .context import Context
 from .renderable import BaseTag
 
 
-class Style(BaseTag):
+class style(BaseTag):
     """
     Represents the 'style' HTML tag used to define style information for a single HTML page. This class allows embedding
     CSS rules directly within HTML content, which can be applied to specific elements or whole pages depending on the selectors
@@ -20,7 +19,7 @@ class Style(BaseTag):
 
     """
 
-    def __init__(self, ctx: Context, default_css: Optional[Dict]):
+    def __init__(self, ctx: Any, default_css: Optional[Dict]):
         self.ctx = ctx
         self.css = default_css or {}
         self.tag = self.__class__.__name__

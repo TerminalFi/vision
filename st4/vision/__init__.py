@@ -14,6 +14,7 @@ from .h5 import h5
 from .h6 import h6
 from .head import head
 from .hr import hr
+from .html import html
 from .i import i
 from .img import img
 from .li import li
@@ -23,8 +24,8 @@ from .renderable import BaseTag
 from .small import small
 from .span import span
 from .strong import strong
-from .style import Style
-from .tag import Tag
+from .style import style
+from .tag import tag
 from .text import Text as text
 from .tt import tt
 from .u import u
@@ -50,6 +51,7 @@ __all__ = [
     "h6",
     "head",
     "hr",
+    "html",
     "i",
     "img",
     "li",
@@ -59,8 +61,8 @@ __all__ = [
     "small",
     "span",
     "strong",
-    "Style",
-    "Tag",
+    "style",
+    "tag",
     "text",
     "tt",
     "u",

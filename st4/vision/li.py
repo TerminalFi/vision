@@ -1,10 +1,10 @@
 from typing import Optional
 
-from .context import Context
-from .tag import Tag
+from .tag import tag
+from .types import ContextBase
 
 
-class li(Tag):
+class li(tag):
     """
     Represents the 'li' HTML tag, used to define a list item in an ordered (ol) or unordered (ul) list.
     This tag is essential for creating structured lists of items, which can be styled and customized using CSS.
@@ -14,7 +14,7 @@ class li(Tag):
         li(content="This is an item in a list.")
     """
 
-    def __init__(self, ctx: Context, content: Optional[str] = None, *args, **kwargs):
+    def __init__(self, ctx: ContextBase, content: Optional[str] = None, *args, **kwargs):
         super().__init__(ctx, self.__class__.__name__, *args, **kwargs)
         if content:
             self.content(content)

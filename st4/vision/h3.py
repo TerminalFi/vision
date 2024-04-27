@@ -1,10 +1,10 @@
 from typing import Optional
 
-from .context import Context
-from .tag import Tag
+from .tag import tag
+from .types import ContextBase
 
 
-class h3(Tag):
+class h3(tag):
     """
     Represents the 'h3' HTML tag, used for tertiary headings within web content. This tag is commonly used to define
     sub-sections within a larger section marked by 'h2' tags, aiding in the structural organization of the page and
@@ -14,7 +14,7 @@ class h3(Tag):
         h3(content="Detailed Analysis of the Topic")
     """
 
-    def __init__(self, ctx: Context, content: Optional[str] = None, *args, **kwargs):
+    def __init__(self, ctx: ContextBase, content: Optional[str] = None, *args, **kwargs):
         super().__init__(ctx, self.__class__.__name__, *args, **kwargs)
         if content:
             self.content(content)

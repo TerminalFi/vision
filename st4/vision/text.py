@@ -1,4 +1,4 @@
-from .context import Context
+from .types import ContextBase
 from .renderable import BaseTag
 
 
@@ -12,7 +12,7 @@ class Text(BaseTag):
         Text("This is some plain text.")
     """
 
-    def __init__(self, ctx: Context, content: str):
+    def __init__(self, ctx: ContextBase, content: str):
         super().__init__(ctx, "")
         self._content = content
 

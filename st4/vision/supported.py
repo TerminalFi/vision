@@ -22,6 +22,7 @@ class AllowedTags(Enum):
     H6 = "h6"
     HEAD = "head"
     HR = "hr"
+    HTML = "html"
     I = "i"
     IMG = "img"
     LI = "li"
@@ -36,6 +37,15 @@ class AllowedTags(Enum):
     U = "u"
     UL = "ul"
     VAR = "var"
+
+
+class SelfClosingTags(Enum):
+    BR = "br"
+    HR = "hr"
+    IMG = "img"
+    INPUT = "input"
+    LINK = "link"
+    META = "meta"
 
 
 @dataclass(frozen=True)
@@ -87,7 +97,7 @@ class Attribute:
         else:
             raise ValueError(
                 f"Value '{value}' is not allowed for property '{self.name}'. "
-                + f"Allowed values are: {self.allowed_values}"
+                + f"Allowed prefix values are: {self.allowed_values}"
             )
 
 

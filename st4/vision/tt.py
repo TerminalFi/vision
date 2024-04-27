@@ -1,10 +1,10 @@
 from typing import Optional
 
-from .context import Context
-from .tag import Tag
+from .tag import tag
+from .types import ContextBase
 
 
-class tt(Tag):
+class tt(tag):
     """
     Represents the 'tt' (teletype text) HTML tag, which was traditionally used to display text using the monospace
     font similar to what was used on old teletypes and terminals. This tag is useful for displaying computer code or
@@ -15,7 +15,7 @@ class tt(Tag):
         tt(content="This text will appear in a monospace font.")
     """
 
-    def __init__(self, ctx: Context, content: Optional[str] = None, *args, **kwargs):
+    def __init__(self, ctx: ContextBase, content: Optional[str] = None, *args, **kwargs):
         super().__init__(ctx, self.__class__.__name__, *args, **kwargs)
         if content:
             self.content(content)

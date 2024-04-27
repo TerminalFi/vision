@@ -1,11 +1,9 @@
 import html
-import html.parser
 import re
 from typing import Any, Callable, Iterable, List, Union
 
-from .context import Context
 from .renderable import BaseTag
-from .style import Style
+from .style import style
 from .text import Text
 
 SELF_CLOSING_TAGS = ["img", "br", "hr", "input", "link", "meta"]
@@ -23,7 +21,7 @@ def _remove_entities(text):
     return RE_BAD_ENTITIES.sub(repl, text)
 
 
-class Tag(BaseTag):
+class tag(BaseTag):
     """
     Extends BaseTag to handle content management and child elements specifically. This class allows for the creation
     of nested HTML structures using context management to maintain a clean layout in the code.
@@ -39,7 +37,7 @@ class Tag(BaseTag):
         **kwargs,
     ):
         super().__init__(*args, **kwargs)
-        self._children: List[Union["Tag", SelfClosingTag, Style, Text]] = []
+        self._children: List[Union["tag", SelfClosingTag, style, Text]] = []
         self._content: str = ""
 
     def __enter__(self):
@@ -53,17 +51,19 @@ class Tag(BaseTag):
             self.ctx.pop(self)
 
     # Child Handling
-    def child(self, *elems: Union["Tag", Style, Text, Iterable[Union["Tag", Style, Text]]]):
+    def child(self, *elems: Union["tag", style, Text, Iterable[Union["tag", style, Text]]]):
         with self.ctx._lock:  # type: ignore
             for elem in elems:
-                if isinstance(elem, (Tag, Style, Text)):
+                if isinstance(elem, (tag, style, Text)):
                     self._children.append(elem)
                 else:
                     self._children.extend(elem)
         return self
 
     # Content Management
-    def content(self, content: str, escape: bool = True) -> "Tag":
+    def content(self, content: str, escape: bool = True) -> "tag":
+        if not content:
+            return self
         with self.ctx._lock:  # type: ignore
             if escape:
                 self._content = _remove_entities(html.escape(content))
@@ -110,7 +110,7 @@ class Tag(BaseTag):
         return f"{open_tag}{self._content}{children_html}{close_tag}"
 
     # Query Methods
-    def query_by_id(self, id_value: str) -> Union["Tag", None]:
+    def query_by_id(self, id_value: str) -> Union["tag", None]:
         """
         Recursively query the element and its children for an element with a specific id, ensuring thread safety.
         """
@@ -118,14 +118,14 @@ class Tag(BaseTag):
             if self.id == id_value:
                 return self
             for child in self._children:
-                if isinstance(child, (Style, Text, SelfClosingTag)):
+                if isinstance(child, (style, Text, SelfClosingTag)):
                     continue
                 result = child.query_by_id(id_value)
                 if result is not None:
                     return result
             return None
 
-    def query_by_class(self, class_value: str) -> List["Tag"]:
+    def query_by_class(self, class_value: str) -> List["tag"]:
         """
         Recursively query the element and its children for elements with a specific class, ensuring thread safety.
         """
@@ -133,7 +133,7 @@ class Tag(BaseTag):
         if class_value in self._classes:
             results.append(self)
         for child in self._children:
-            if isinstance(child, Tag):
+            if isinstance(child, tag):
                 additional_results = child.query_by_class(class_value)
                 if additional_results:  # Ensure that additional_results is not None and is iterable
                     results.extend(additional_results)
@@ -184,7 +184,7 @@ class SelfClosingTag(BaseTag):
             br.child(Tag('span'))  # This will raise an error
     """
 
-    def __init__(self, ctx: Context, tag, *args, **kwargs):
+    def __init__(self, ctx: Any, tag, *args, **kwargs):
         if tag not in SELF_CLOSING_TAGS:
             raise ValueError(f"{tag} is not a valid self-closing tag")
         super().__init__(ctx, tag, *args, **kwargs)

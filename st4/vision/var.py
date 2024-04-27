@@ -1,10 +1,10 @@
 from typing import Optional
 
-from .context import Context
-from .tag import Tag
+from .tag import tag
+from .types import ContextBase
 
 
-class var(Tag):
+class var(tag):
     """
     Represents the 'var' HTML tag, used to define a variable in a mathematical expression or a programming context.
     This tag is typically rendered in italics to signify that the text is a variable name, not regular text. It helps
@@ -17,7 +17,7 @@ class var(Tag):
             Text(" be the number of apples.")
     """
 
-    def __init__(self, ctx: Context, content: Optional[str] = None, *args, **kwargs):
+    def __init__(self, ctx: ContextBase, content: Optional[str] = None, *args, **kwargs):
         super().__init__(ctx, self.__class__.__name__, *args, **kwargs)
         if content:
             self.content(content)

@@ -1,10 +1,10 @@
 from typing import Optional
 
-from .context import Context
-from .tag import Tag
+from .tag import tag
+from .types import ContextBase
 
 
-class strong(Tag):
+class strong(tag):
     """
     Represents the 'strong' HTML tag, which is used to indicate that its contents have strong importance, seriousness, or urgency.
     Browsers typically render the contents in bold type. This tag not only changes the style of the text but also signifies
@@ -14,7 +14,7 @@ class strong(Tag):
         strong(content="This text is of great importance.")
     """
 
-    def __init__(self, ctx: Context, content: Optional[str] = None, *args, **kwargs):
+    def __init__(self, ctx: ContextBase, content: Optional[str] = None, *args, **kwargs):
         super().__init__(ctx, self.__class__.__name__, *args, **kwargs)
         if content:
             self.content(content)

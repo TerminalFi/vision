@@ -1,8 +1,8 @@
-from .context import Context
-from .tag import Tag
+from .tag import tag
+from .types import ContextBase
 
 
-class ul(Tag):
+class ul(tag):
     """
     Represents the 'ul' HTML tag, used to create an unordered list, typically rendered with bullet points.
     This tag is essential for grouping a collection of items that do not have a specific ordering, making it
@@ -14,5 +14,5 @@ class ul(Tag):
             li(content="Second item")
     """
 
-    def __init__(self, ctx: Context, *args, **kwargs):
+    def __init__(self, ctx: ContextBase, *args, **kwargs):
         super().__init__(ctx, self.__class__.__name__, *args, **kwargs)
