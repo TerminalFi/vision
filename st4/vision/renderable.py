@@ -1,5 +1,5 @@
 import html
-from typing import Any, Dict, List, Literal, Optional, Union
+from typing import Any, Callable, Dict, List, Literal, Optional, Union
 
 from .supported import attribute_validator, css_validator
 from .types import ContextBase
@@ -334,3 +334,29 @@ class BaseTag(metaclass=base):
 
     def color(self, color: str) -> "BaseTag | ValueError":
         return self.set_style("color", color)
+
+    # Conditional Rendering
+    def when(self, condition: Any) -> Any:
+        """
+        Return self if the condition is True, otherwise set the _should_render flag to False and return self.
+        """
+        if condition:
+            return self
+        else:
+            self._should_render = False
+            return self
+
+    def when_or_else(
+        self,
+        condition: Any,
+        func: Callable[[], Any],
+        func_else: Callable[[], Any],
+    ) -> List[Any]:
+        """
+        Return the result of func if the condition is True, otherwise return the result of func_else.
+        Useful for adding multiple elements based on a condition.
+        """
+        if condition:
+            return func()
+        else:
+            return func_else()

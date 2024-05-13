@@ -1,6 +1,6 @@
 import html
 import re
-from typing import Any, Callable, Iterable, List, Union
+from typing import Any, Iterable, List, Union
 
 from .renderable import BaseTag
 from .style import style
@@ -138,32 +138,6 @@ class tag(BaseTag):
                 if additional_results:  # Ensure that additional_results is not None and is iterable
                     results.extend(additional_results)
         return results
-
-    # Conditional Rendering
-    def when(self, condition: Any) -> Any:
-        """
-        Return self if the condition is True, otherwise set the _should_render flag to False and return self.
-        """
-        if condition:
-            return self
-        else:
-            self._should_render = False
-            return self
-
-    def when_or_else(
-        self,
-        condition: Any,
-        func: Callable[[], Any],
-        func_else: Callable[[], Any],
-    ) -> List[Any]:
-        """
-        Return the result of func if the condition is True, otherwise return the result of func_else.
-        Useful for adding multiple elements based on a condition.
-        """
-        if condition:
-            return func()
-        else:
-            return func_else()
 
 
 class SelfClosingTag(BaseTag):

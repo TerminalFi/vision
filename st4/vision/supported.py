@@ -95,10 +95,15 @@ class Attribute:
         if value.startswith("https://") or value.startswith("http://") or value.startswith("subl:"):
             return True
         else:
-            raise ValueError(
+            print(
                 f"Value '{value}' is not allowed for property '{self.name}'. "
                 + f"Allowed prefix values are: {self.allowed_values}"
             )
+            return True
+            # raise ValueError(
+            #     f"Value '{value}' is not allowed for property '{self.name}'. "
+            #     + f"Allowed prefix values are: {self.allowed_values}"
+            # )
 
 
 @dataclass
