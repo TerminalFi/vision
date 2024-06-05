@@ -75,6 +75,7 @@ class AllowedAttributes(Enum):
     ID = "id"
     CLASS = "class"
     TITLE = "title"
+    SRC = "src"
 
 
 @dataclass(frozen=True)
@@ -128,6 +129,7 @@ attribute_validator.add_attribute(Attribute(AllowedAttributes.HREF.value, frozen
 attribute_validator.add_attribute(Attribute(AllowedAttributes.CLASS.value))
 attribute_validator.add_attribute(Attribute(AllowedAttributes.ID.value))
 attribute_validator.add_attribute(Attribute(AllowedAttributes.TITLE.value))
+attribute_validator.add_attribute(Attribute(AllowedAttributes.SRC.value))
 
 
 @dataclass(frozen=True)
